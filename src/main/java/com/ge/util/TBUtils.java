@@ -20,7 +20,7 @@ public class TBUtils {
 
 	public static List<MovieDTO> getMovieDTOs(List<Movie> movies) {
 		List<MovieDTO> movieDTOs = new ArrayList<>();
-		for(Movie movie:movies) {
+		for (Movie movie : movies) {
 			MovieDTO movieDTO = new MovieDTO();
 			BeanUtils.copyProperties(movie, movieDTO);
 			movieDTOs.add(movieDTO);
@@ -44,6 +44,26 @@ public class TBUtils {
 		MovieDTO movieDTO = new MovieDTO();
 		BeanUtils.copyProperties(movie, movieDTO);
 		return movieDTO;
+	}
+
+	public static List<TicketDTO> getTicketDTOs(List<Ticket> tickets) {
+		List<TicketDTO> ticketDTOs = new ArrayList<>();
+		for (Ticket ticket : tickets) {
+			TicketDTO ticketDTO = new TicketDTO();
+			BeanUtils.copyProperties(ticket, ticketDTO);
+			ticketDTOs.add(ticketDTO);
+		}
+		return ticketDTOs;
+	}
+
+	public static boolean isValidSeatNo(List<Integer> seats) {
+
+		for (Integer seatNo : seats) {
+			if (seatNo < 0 || seatNo > 100) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

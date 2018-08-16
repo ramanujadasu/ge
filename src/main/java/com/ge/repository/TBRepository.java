@@ -14,11 +14,15 @@ public interface TBRepository {
 
 	List<Movie> getMovies();
 
-	void bookTicket(Ticket ticket);
+	String bookTicket(Ticket ticket);
 
 	Ticket getTicketInfo(String ticketId);
 
 	Movie getMovieByName(String movieName);
+
+	List<Ticket> getTicketByUserId(String userId);
+
+	Integer getNotAllocatedSeats();
 	
 }
 	

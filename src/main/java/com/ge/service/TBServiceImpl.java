@@ -17,7 +17,10 @@ import org.springframework.stereotype.Service;
 import com.ge.dto.MovieDTO;
 import com.ge.dto.ResponseDTO;
 import com.ge.dto.TicketDTO;
+import com.ge.dto.TicketResponseDTO;
+import com.ge.model.Ticket;
 import com.ge.repository.TBRepository;
+import com.ge.util.TBStatus;
 import com.ge.util.TBUtils;
 
 @Service
@@ -43,28 +46,29 @@ public class TBServiceImpl implements TBService {
 	}
 
 	@Override
-	public synchronized ResponseDTO<TicketDTO> bookTicket(TicketDTO ticketDTO) {
-		ResponseDTO<TicketDTO> responseDTO = new ResponseDTO<TicketDTO>();
-		String result = null;
-		ExecutorService executor = Executors.newCachedThreadPool();
-		Future<String> future = executor.submit(new Callable<String>() {
-			public String call() throws Exception {
-				tBRepository.bookTicket(TBUtils.getTicket(ticketDTO));
-				return "Booking is success for the moive Id:" + ticketDTO.getMovieId();
-			}
-		});
-		try {
-			result = future.get(2, TimeUnit.MINUTES);
-			responseDTO.setMessage(result);
-		} catch (InterruptedException e) {
-		} catch (ExecutionException e) {
-		} catch (TimeoutException e) {
-			future.cancel(true);
+	public ResponseDTO<TicketResponseDTO> bookTicket(TicketDTO ticketDTO) {
+		ResponseDTO<TicketResponseDTO> responseDTO = new ResponseDTO<>();
+		TicketResponseDTO ticketResponseDTO = new TicketResponseDTO();
+		Ticket ticket = TBUtils.getTicket(ticketDTO);
+		TicketBooking ticketBooking = new TicketBooking();
+		
+		TicketThread ticketThread = new TicketThread(ticket,ticketBooking, ticket.getUserId());
+		logger.info("ticketThread: {}", ticketThread.getName());
+		String ticketId = ticketThread.getTicket().getTicketId();
+		logger.info("ticketId: {}", ticketId);
+		if(ticketId != null) {
+			responseDTO.setMessage("Booking is success for the moive Id:" + ticketDTO.getMovieId());
+			ticketResponseDTO = new TicketResponseDTO(ticketId, ticketDTO.getMovieId(), ticketDTO.getSeats(), TBStatus.CONFIRMED.name(), ticketDTO.getUserId());
+			responseDTO.setResponseData(ticketResponseDTO);
+		}else {
+			ticketResponseDTO = new TicketResponseDTO(ticketId, ticketDTO.getMovieId(), ticketDTO.getSeats(), TBStatus.FAILURE.name(), ticketDTO.getUserId());
+			responseDTO.setResponseData(ticketResponseDTO);
 			responseDTO.setMessage("Booking is failed due for the moive Id:" + ticketDTO.getMovieId());
 		}
 		return responseDTO;
 	}
 
+	
 	@Override
 	public TicketDTO getTicketInfo(String ticketId) {
 		if(tBRepository.getTicketInfo(ticketId) != null) {
@@ -80,5 +84,20 @@ public class TBServiceImpl implements TBService {
 		}
 		return null;
 	}
+
+	@Override
+	public Integer getNotAllocatedSeats() {
+			return tBRepository.getNotAllocatedSeats();	
+	}
+
+	
+	@Override
+	public List<TicketDTO> getTicketByUserId(String userId){
+		if(tBRepository.getTicketByUserId(userId) != null) {
+			return TBUtils.getTicketDTOs(tBRepository.getTicketByUserId(userId));	
+		}
+		return null;
+	}
+	
 
 }

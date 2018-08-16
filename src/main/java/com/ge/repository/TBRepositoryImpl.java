@@ -2,6 +2,8 @@ package com.ge.repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -18,6 +20,8 @@ public class TBRepositoryImpl implements TBRepository {
 
 	List<Movie> movies = new ArrayList<>();
 	List<Ticket> tickets = new ArrayList<>();
+	Integer totalNumberOfSeats = 100;
+	
 
 	@Override
 	public void addMovie(Movie movie) {
@@ -31,9 +35,12 @@ public class TBRepositoryImpl implements TBRepository {
 	}
 
 	@Override
-	public void bookTicket(Ticket ticket) {
+	public String bookTicket(Ticket ticket) {
+		String ticketId = UUID.randomUUID().toString();
+		ticket.setTicketId(ticketId);
+		totalNumberOfSeats = totalNumberOfSeats - (ticket.getSeats() != null ? ticket.getSeats().size() : 0); 
 		tickets.add(ticket);
-
+		return ticketId;
 	}
 
 	@Override
@@ -53,6 +60,21 @@ public class TBRepositoryImpl implements TBRepository {
 			return resultMovies.get(0);
 		}
 		return null;
+	}
+
+	@Override
+	public List<Ticket> getTicketByUserId(String userId) {
+		List<Ticket> resultTickets = tickets.stream().filter(ticket -> ticket.getUserId().equals(userId))
+				.collect(Collectors.toList());
+		if (!resultTickets.isEmpty()) {
+			return resultTickets;
+		}
+		return null;
+	}
+
+	@Override
+	public Integer getNotAllocatedSeats() {
+		return totalNumberOfSeats;
 	}
 
 }

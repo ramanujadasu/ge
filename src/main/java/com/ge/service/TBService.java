@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import com.ge.dto.MovieDTO;
 import com.ge.dto.ResponseDTO;
 import com.ge.dto.TicketDTO;
-import com.ge.model.Movie;
+import com.ge.dto.TicketResponseDTO;
 
 @Service
 public interface TBService {
@@ -16,11 +16,15 @@ public interface TBService {
 
 	List<MovieDTO> getMovies();
 
-	ResponseDTO<TicketDTO> bookTicket(TicketDTO ticketDTO);
+	ResponseDTO<TicketResponseDTO> bookTicket(TicketDTO ticketDTO);
 
 	TicketDTO getTicketInfo(String ticketId);
 
 	MovieDTO findByMovieName(String movieName);
+
+	List<TicketDTO> getTicketByUserId(String userId);
+
+	Integer getNotAllocatedSeats();
 	
 }
 	

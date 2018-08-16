@@ -1,11 +1,22 @@
 package com.ge.model;
 
+import java.util.List;
+
 public class Ticket {
 
 	private String ticketId;
 	private String movieId;
 	private String confirmationStatus;
 	private String userId;
+	private List<Integer> seats;
+	
+	public List<Integer> getSeats() {
+		return seats;
+	}
+
+	public void setSeats(List<Integer> seats) {
+		this.seats = seats;
+	}
 
 	public String getTicketId() {
 		return ticketId;
