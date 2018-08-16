@@ -1,0 +1,42 @@
+
+
+Solution:
+
+select d.name,  d.model_id, r2.rev_id, d.created_at from 
+(select m.name, m.model_id, MAX(r.created_at) AS created_at from 
+	model m left join revision r on m.model_id = r.model_id 
+    group by m.name,m.model_id
+)
+d left join revision r2 on d.created_at = r2.created_at;
+  
+  
+
+
+Steps:
+
+CREATE TABLE `test`.`model` (
+  `id` INT NOT NULL,
+  `name` VARCHAR(45) NULL,
+  `model_id` VARCHAR(45) NULL,
+  `is_deleted` VARCHAR(10) NULL,
+  PRIMARY KEY (`id`));
+
+CREATE TABLE `test`.`revision` (
+  `id` INT NOT NULL,
+  `model_id` VARCHAR(45) NULL,
+  `rev_id` INT NULL,
+  `created_at` VARCHAR(45) NULL,
+  PRIMARY KEY (`id`));
+
+  
+INSERT INTO `test`.`model` (`id`, `name`, `model_id`, `is_deleted`) VALUES ('1', 'ABC', '1234', 'FALSE');
+INSERT INTO `test`.`model` (`id`, `name`, `model_id`, `is_deleted`) VALUES ('2', 'ABC', '5678', 'FALSE');
+INSERT INTO `test`.`model` (`id`, `name`, `model_id`, `is_deleted`) VALUES ('3', 'XYZ', '4567', 'FALSE');
+
+
+INSERT INTO `test`.`revision` (`id`, `model_id`, `rev_id`, `created_at`) VALUES ('1', '1234', '2', '23456');
+INSERT INTO `test`.`revision` (`id`, `model_id`, `rev_id`, `created_at`) VALUES ('2', '1234', '3', '1111');
+INSERT INTO `test`.`revision` (`id`, `model_id`, `rev_id`, `created_at`) VALUES ('3', '5678', '1', '10000');
+INSERT INTO `test`.`revision` (`id`, `model_id`, `rev_id`, `created_at`) VALUES ('4', '5678', '2', '10001');
+
+
