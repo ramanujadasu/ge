@@ -39,8 +39,8 @@ public class TBServiceImpl implements TBService {
 
 	@Override
 	public List<MovieDTO> getMovies() {
-		if(tBRepository.getMovies() != null) {
-			return TBUtils.getMovieDTOs(tBRepository.getMovies());	
+		if (tBRepository.getMovies() != null) {
+			return TBUtils.getMovieDTOs(tBRepository.getMovies());
 		}
 		return null;
 	}
@@ -49,55 +49,103 @@ public class TBServiceImpl implements TBService {
 	public ResponseDTO<TicketResponseDTO> bookTicket(TicketDTO ticketDTO) {
 		ResponseDTO<TicketResponseDTO> responseDTO = new ResponseDTO<>();
 		TicketResponseDTO ticketResponseDTO = new TicketResponseDTO();
-		Ticket ticket = TBUtils.getTicket(ticketDTO);
-		TicketBooking ticketBooking = new TicketBooking();
-		
-		TicketThread ticketThread = new TicketThread(ticket,ticketBooking, ticket.getUserId());
-		logger.info("ticketThread: {}", ticketThread.getName());
-		String ticketId = ticketThread.getTicket().getTicketId();
-		logger.info("ticketId: {}", ticketId);
-		if(ticketId != null) {
-			responseDTO.setMessage("Booking is success for the moive Id:" + ticketDTO.getMovieId());
-			ticketResponseDTO = new TicketResponseDTO(ticketId, ticketDTO.getMovieId(), ticketDTO.getSeats(), TBStatus.CONFIRMED.name(), ticketDTO.getUserId());
+		List<Integer> notAllocatedSeats = tBRepository.getNotAllocatedSeats();
+		if (!notAllocatedSeats.containsAll(ticketDTO.getSeats())) {
+			ticketResponseDTO = new TicketResponseDTO(null, ticketDTO.getMovieId(), ticketDTO.getSeats(),
+					TBStatus.FAILURE.name(), ticketDTO.getUserId());
 			responseDTO.setResponseData(ticketResponseDTO);
-		}else {
-			ticketResponseDTO = new TicketResponseDTO(ticketId, ticketDTO.getMovieId(), ticketDTO.getSeats(), TBStatus.FAILURE.name(), ticketDTO.getUserId());
+			responseDTO.setMessage("Already given seats(one/more) are booked");
+			return responseDTO;
+		}
+		Ticket ticket = TBUtils.getTicket(ticketDTO);
+		// TicketBooking ticketBooking = new TicketBooking();
+		String ticketId = null;
+		/*
+		 * TicketThread ticketThread = new TicketThread(ticket,ticketBooking,
+		 * ticket.getUserId()); ticketThread.run(); logger.info("ticketThread: {}",
+		 * ticketThread.getName()); ticketId = ticketThread.getTicket().getTicketId();
+		 */
+
+		ticketId = this.bookingTicket(ticket);
+		logger.info("ticketId: {}", ticketId);
+		if (ticketId != null) {
+			responseDTO.setMessage("Booking is success for the moive Id:" + ticketDTO.getMovieId());
+			ticketResponseDTO = new TicketResponseDTO(ticketId, ticketDTO.getMovieId(), ticketDTO.getSeats(),
+					TBStatus.CONFIRMED.name(), ticketDTO.getUserId());
+			responseDTO.setResponseData(ticketResponseDTO);
+		} else {
+			ticketResponseDTO = new TicketResponseDTO(ticketId, ticketDTO.getMovieId(), ticketDTO.getSeats(),
+					TBStatus.FAILURE.name(), ticketDTO.getUserId());
 			responseDTO.setResponseData(ticketResponseDTO);
 			responseDTO.setMessage("Booking is failed due for the moive Id:" + ticketDTO.getMovieId());
 		}
 		return responseDTO;
 	}
 
-	
+	public synchronized String bookingTicket(Ticket ticket) {
+		logger.info("bookingTicket:");
+		String ticketId = null;
+		ExecutorService executor = Executors.newCachedThreadPool();
+		Future<String> future = executor.submit(new Callable<String>() {
+			public String call() throws Exception {
+				return tBRepository.bookTicket(ticket);
+			}
+		});
+		try {
+			ticketId = future.get(2, TimeUnit.MINUTES);
+		} catch (InterruptedException e) {
+			logger.error("InterruptedException", e);
+		} catch (ExecutionException e) {
+			logger.error("ExecutionException", e);
+		} catch (TimeoutException e) {
+			logger.error("TimeoutException", e);
+			ticketId = null;
+			future.cancel(true);
+		}
+		logger.error("ticketId: {}", ticketId);
+		return ticketId;
+	}
+
 	@Override
 	public TicketDTO getTicketInfo(String ticketId) {
-		if(tBRepository.getTicketInfo(ticketId) != null) {
-			return TBUtils.getTicketDTO(tBRepository.getTicketInfo(ticketId));	
+		if (tBRepository.getTicketInfo(ticketId) != null) {
+			return TBUtils.getTicketDTO(tBRepository.getTicketInfo(ticketId));
 		}
 		return null;
 	}
 
 	@Override
 	public MovieDTO findByMovieName(String movieName) {
-		if(tBRepository.getMovieByName(movieName) != null) {
-			return TBUtils.getMovieDTO(tBRepository.getMovieByName(movieName));	
+		if (tBRepository.getMovieByName(movieName) != null) {
+			return TBUtils.getMovieDTO(tBRepository.getMovieByName(movieName));
 		}
 		return null;
 	}
 
 	@Override
-	public Integer getNotAllocatedSeats() {
-			return tBRepository.getNotAllocatedSeats();	
+	public List<Integer> getNotAllocatedSeats() {
+		return tBRepository.getNotAllocatedSeats();
 	}
 
-	
 	@Override
-	public List<TicketDTO> getTicketByUserId(String userId){
-		if(tBRepository.getTicketByUserId(userId) != null) {
-			return TBUtils.getTicketDTOs(tBRepository.getTicketByUserId(userId));	
+	public List<TicketDTO> getTicketByUserId(String userId) {
+		if (tBRepository.getTicketByUserId(userId) != null) {
+			return TBUtils.getTicketDTOs(tBRepository.getTicketByUserId(userId));
 		}
 		return null;
 	}
-	
+
+	@Override
+	public void setNotAllocatedSeats() {
+		tBRepository.setNotAllocatedSeats();
+	}
+
+	@Override
+	public List<TicketDTO> getTickets() {
+		if (tBRepository.getTickets() != null) {
+			return TBUtils.getTicketDTOs(tBRepository.getTickets());
+		}
+		return null;
+	}
 
 }

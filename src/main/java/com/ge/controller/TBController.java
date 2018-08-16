@@ -125,4 +125,16 @@ public class TBController {
 		return new ResponseEntity<List<TicketDTO>>(tbService.getTicketByUserId(userId), HttpStatus.OK);
 	}
 
+	@ApiOperation(value = "Get all booking tickets", notes = "This API used for get all booking tickets")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Success"),
+			@ApiResponse(code = 400, message = "Bad Request"), @ApiResponse(code = 405, message = "Method Not Allowed"),
+			@ApiResponse(code = 401, message = "Unauthorized"),
+			@ApiResponse(code = 500, message = "Internal Server Error") })
+	@RequestMapping(method = RequestMethod.GET, value = "/tickets")
+	public ResponseEntity<List<TicketDTO>> getTickets(
+			@ApiParam(value = "Valid access token should passed") @RequestHeader(value = "token") String accessToken) {
+		logger.info("getTickets:");
+		return new ResponseEntity<List<TicketDTO>>(tbService.getTickets(), HttpStatus.OK);
+	}
+
 }

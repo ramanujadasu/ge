@@ -22,7 +22,11 @@ public interface TBRepository {
 
 	List<Ticket> getTicketByUserId(String userId);
 
-	Integer getNotAllocatedSeats();
+	List<Integer>  getNotAllocatedSeats();
+
+	void setNotAllocatedSeats();
+
+	List<Ticket> getTickets();
 	
 }
 	

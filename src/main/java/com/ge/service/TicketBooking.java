@@ -38,6 +38,7 @@ public class TicketBooking implements Runnable {
 	}
 
 	public synchronized String bookingTicket(Ticket ticket) {
+		logger.info("bookingTicket:");
 		String ticketId = null;
 		ExecutorService executor = Executors.newCachedThreadPool();
 		Future<String> future = executor.submit(new Callable<String>() {

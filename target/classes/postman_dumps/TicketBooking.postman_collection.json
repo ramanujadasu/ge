@@ -1,0 +1,223 @@
+{
+	"info": {
+		"_postman_id": "2b8456a3-b906-49ba-ab75-575c4f23a684",
+		"name": "TicketBooking",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d3d52168-1129-42a8-9c5a-61be406e81ad",
+						"type": "text/javascript",
+						"exec": [
+							"var data = JSON.parse(responseBody);",
+							"postman.setEnvironmentVariable(\"token\", responseData);"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "http://localhost:8080/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Movie",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"movieId\":\"KES02\", \"movieName\":\"kesava2\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080//tb/add-movie",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"tb",
+						"add-movie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Movies",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"movieId\":\"KES02\", \"movieName\":\"kesava2\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080//tb/all-movies",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"tb",
+						"all-movies"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Book Ticket",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"movieId\":\"KES01\", \"userId\":\"kesava1\", \"bookingId\":\"BOOK1\",\"seats\":[5,24]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080//tb/book-ticket",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"tb",
+						"book-ticket"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All booking tickets",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"movieId\":\"KES02\", \"movieName\":\"kesava2\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080//tb/tickets",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"tb",
+						"tickets"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Booking Tickets By UserID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "token",
+						"value": "{{token}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"movieId\":\"KES02\", \"movieName\":\"kesava2\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/tb/user-tickets?userId=kesava1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"",
+						"tb",
+						"user-tickets"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "kesava1"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

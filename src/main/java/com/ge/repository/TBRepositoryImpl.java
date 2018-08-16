@@ -20,7 +20,7 @@ public class TBRepositoryImpl implements TBRepository {
 
 	List<Movie> movies = new ArrayList<>();
 	List<Ticket> tickets = new ArrayList<>();
-	Integer totalNumberOfSeats = 100;
+	List<Integer> totalNumberOfSeats = new ArrayList<>();
 	
 
 	@Override
@@ -38,7 +38,10 @@ public class TBRepositoryImpl implements TBRepository {
 	public String bookTicket(Ticket ticket) {
 		String ticketId = UUID.randomUUID().toString();
 		ticket.setTicketId(ticketId);
-		totalNumberOfSeats = totalNumberOfSeats - (ticket.getSeats() != null ? ticket.getSeats().size() : 0); 
+		for(Integer seat:ticket.getSeats()) {
+			totalNumberOfSeats.remove(seat);
+			}
+		
 		tickets.add(ticket);
 		return ticketId;
 	}
@@ -71,10 +74,25 @@ public class TBRepositoryImpl implements TBRepository {
 		}
 		return null;
 	}
+	@Override
+	public void setNotAllocatedSeats() {
+		for(int i=1;i<=100;i++) {
+			totalNumberOfSeats.add(i);
+		}
+		logger.info("totalNumberOfSeats: {}", totalNumberOfSeats.size());
+	}
+	@Override
+	public List<Integer> getNotAllocatedSeats() {
+		return totalNumberOfSeats;
+	}
 
 	@Override
-	public Integer getNotAllocatedSeats() {
-		return totalNumberOfSeats;
+	public List<Ticket> getTickets() {
+		List<Ticket> resultTickets = tickets.stream().collect(Collectors.toList());
+		if (!resultTickets.isEmpty()) {
+			return resultTickets;
+		}
+		return null;
 	}
 
 }

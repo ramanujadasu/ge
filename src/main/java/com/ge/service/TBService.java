@@ -24,7 +24,11 @@ public interface TBService {
 
 	List<TicketDTO> getTicketByUserId(String userId);
 
-	Integer getNotAllocatedSeats();
+	List<Integer> getNotAllocatedSeats();
+	
+	void setNotAllocatedSeats();
+
+	List<TicketDTO> getTickets();
 	
 }
 	
