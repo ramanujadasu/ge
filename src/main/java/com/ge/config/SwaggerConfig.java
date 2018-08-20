@@ -1,13 +1,3 @@
-/*******************************************************************************
- * Copyright (c) 2018 Robert Bosch GmbH 
- * Stuttgart, Germany
- * All rights reserved.
- * 
- * This software is the confidential and proprietary information of 
- * Robert Bosch GmbH ("Confidential Information").  You shall not disclose such 
- * Confidential Information and shall use it only in accordance with 
- * the terms of the license agreement you entered into with Robert Bosch GmbH.
- ******************************************************************************/
 package com.ge.config;
 
 import static springfox.documentation.builders.PathSelectors.regex;
